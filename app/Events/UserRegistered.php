@@ -12,7 +12,7 @@ class UserRegistered
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new event instance.
+     * Создать новый экземпляр события.
      */
     public function __construct(public User $user) {}
 }

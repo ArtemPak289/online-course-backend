@@ -5,14 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\ChangePasswordRequest;
 use App\Http\Requests\Profile\UpdateProfileRequest;
+use App\Services\ProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        protected ProfileService $profileService
+    ) {}
+
     /**
-     * Display the authenticated user's profile.
+     * Отобразить профиль аутентифицированного пользователя.
      */
     public function show(Request $request): JsonResponse
     {
@@ -22,30 +27,30 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the authenticated user's profile.
+     * Обновить профиль аутентифицированного пользователя.
      */
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $user = $request->user();
-
-        $user->update($request->validated());
+        $user = $this->profileService->updateProfile(
+            $request->user(),
+            $request->validated()
+        );
 
         return response()->json([
             'message' => 'Profile updated successfully.',
-            'user' => $user->fresh(),
+            'user' => $user,
         ], Response::HTTP_OK);
     }
 
     /**
-     * Change the authenticated user's password.
+     * Изменить пароль аутентифицированного пользователя.
      */
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
-        $user = $request->user();
-
-        $user->update([
-            'password' => $request->validated()['password'],
-        ]);
+        $this->profileService->changePassword(
+            $request->user(),
+            $request->validated('password')
+        );
 
         return response()->json([
             'message' => 'Password changed successfully.',

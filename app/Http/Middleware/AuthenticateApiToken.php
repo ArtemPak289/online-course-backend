@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AuthenticateApiToken
 {
     /**
-     * Handle an incoming request.
+     * Обработать входящий запрос.
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -49,7 +49,7 @@ class AuthenticateApiToken
             ], Response::HTTP_FORBIDDEN);
         }
 
-        // Update token's last used timestamp
+        // Обновить время последнего использования токена
         $apiToken->forceFill(['last_used_at' => now()])->save();
 
         $user->withAccessToken($apiToken);

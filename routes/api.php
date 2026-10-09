@@ -11,21 +11,21 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Public Authentication Routes
+// Публичные маршруты аутентификации
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Authenticated Routes
+// Маршруты, требующие аутентификации
 Route::middleware('auth.api')->group(function () {
-    // Session / Logout
+    // Сессия / Выход
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // User Profile
+    // Профиль пользователя
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
     Route::put('/profile/password', [ProfileController::class, 'changePassword']);
 
-    // Admin User Management
+    // Управление пользователями (Администратор)
     Route::prefix('admin')->group(function () {
         Route::get('/users', [AdminUserController::class, 'index']);
         Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole']);

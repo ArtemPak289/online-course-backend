@@ -47,7 +47,7 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the user is an admin.
+     * Указать, что пользователь является администратором.
      */
     public function admin(): static
     {
@@ -57,7 +57,7 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the user is a teacher.
+     * Указать, что пользователь является преподавателем.
      */
     public function teacher(): static
     {
@@ -67,7 +67,7 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the user is a student.
+     * Указать, что пользователь является студентом.
      */
     public function student(): static
     {
@@ -77,7 +77,7 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the user is blocked.
+     * Указать, что пользователь заблокирован.
      */
     public function blocked(bool $blocked = true): static
     {

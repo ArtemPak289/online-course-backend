@@ -9,7 +9,7 @@ enum UserRole: string
     case Student = 'student';
 
     /**
-     * Get all enum string values.
+     * Получить все строковые значения перечисления.
      *
      * @return array<string>
      */

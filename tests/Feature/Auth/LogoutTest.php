@@ -44,12 +44,12 @@ class LogoutTest extends TestCase
         $user = User::factory()->create();
         $plainToken = $user->createToken();
 
-        // Logout
+        // Выход из системы
         $this->withHeader('Authorization', 'Bearer '.$plainToken)
             ->postJson('/api/logout')
             ->assertStatus(Response::HTTP_OK);
 
-        // Try to access profile with the same token
+        // Попытка доступа к профилю с тем же токеном
         $this->withHeader('Authorization', 'Bearer '.$plainToken)
             ->getJson('/api/profile')
             ->assertStatus(Response::HTTP_UNAUTHORIZED);

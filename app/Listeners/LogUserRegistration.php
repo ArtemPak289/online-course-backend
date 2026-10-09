@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 class LogUserRegistration
 {
     /**
-     * Handle the event.
+     * Обработать событие.
      */
     public function handle(UserRegistered $event): void
     {

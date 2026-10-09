@@ -24,7 +24,7 @@ class ApiToken extends Model
     ];
 
     /**
-     * Get the user that owns the API token.
+     * Получить пользователя, которому принадлежит API-токен.
      */
     public function user(): BelongsTo
     {
@@ -32,7 +32,7 @@ class ApiToken extends Model
     }
 
     /**
-     * Determine if the token is not expired.
+     * Проверить, не истек ли срок действия токена.
      */
     public function isValid(): bool
     {

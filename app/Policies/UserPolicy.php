@@ -7,7 +7,7 @@ use App\Models\User;
 class UserPolicy
 {
     /**
-     * Determine whether the user can view any users.
+     * Определить, может ли пользователь просматривать список пользователей.
      */
     public function viewAny(User $user): bool
     {
@@ -15,7 +15,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can view the specific user profile.
+     * Определить, может ли пользователь просматривать профиль конкретного пользователя.
      */
     public function view(User $user, User $model): bool
     {
@@ -23,7 +23,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can update the specific user profile.
+     * Определить, может ли пользователь обновлять профиль конкретного пользователя.
      */
     public function update(User $user, User $model): bool
     {
@@ -31,7 +31,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can update the user's role.
+     * Определить, может ли пользователь изменять роль пользователя.
      */
     public function updateRole(User $user, User $model): bool
     {
@@ -39,11 +39,11 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can block or unblock the user.
+     * Определить, может ли пользователь блокировать или разблокировать пользователя.
      */
     public function block(User $user, User $model): bool
     {
-        // Only admin can block users, and admin cannot block themselves
+        // Только администратор может блокировать пользователей, и администратор не может заблокировать сам себя
         return $user->isAdmin() && $user->id !== $model->id;
     }
 }

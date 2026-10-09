@@ -16,7 +16,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The current authenticated access token instance.
+     * Экземпляр текущего аутентифицированного токена доступа.
      */
     protected ?ApiToken $currentAccessToken = null;
 
@@ -59,7 +59,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all API tokens for the user.
+     * Получить все API-токены пользователя.
      */
     public function tokens(): HasMany
     {
@@ -67,7 +67,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Create a new API token for the user.
+     * Создать новый API-токен для пользователя.
      */
     public function createToken(string $name = 'auth_token', ?\DateTimeInterface $expiresAt = null): string
     {
@@ -83,7 +83,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Set the current access token.
+     * Установить текущий токен доступа.
      */
     public function withAccessToken(ApiToken $token): self
     {
@@ -93,7 +93,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the current access token.
+     * Получить текущий токен доступа.
      */
     public function currentAccessToken(): ?ApiToken
     {
@@ -101,7 +101,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is an admin.
+     * Проверить, является ли пользователь администратором.
      */
     public function isAdmin(): bool
     {
@@ -109,7 +109,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is a teacher.
+     * Проверить, является ли пользователь преподавателем.
      */
     public function isTeacher(): bool
     {
@@ -117,7 +117,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is a student.
+     * Проверить, является ли пользователь студентом.
      */
     public function isStudent(): bool
     {
@@ -125,7 +125,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has given role.
+     * Проверить, имеет ли пользователь указанную роль.
      */
     public function hasRole(UserRole|string $role): bool
     {
@@ -135,7 +135,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is blocked.
+     * Проверить, заблокирован ли пользователь.
      */
     public function isBlocked(): bool
     {

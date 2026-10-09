@@ -125,7 +125,7 @@ class UserManagementTest extends TestCase
         $targetUser = User::factory()->student()->create();
         $targetToken = $targetUser->createToken();
 
-        // Block user
+        // Блокировка пользователя
         $response = $this->actingAsApi($admin)
             ->patchJson("/api/admin/users/{$targetUser->id}/block", [
                 'is_blocked' => true,
@@ -142,12 +142,12 @@ class UserManagementTest extends TestCase
 
         $this->assertTrue($targetUser->fresh()->isBlocked());
 
-        // Existing token should be deleted
+        // Существующий токен должен быть удален
         $this->assertDatabaseMissing('api_tokens', [
             'token_hash' => hash('sha256', $targetToken),
         ]);
 
-        // Unblock user
+        // Разблокировка пользователя
         $unblockResponse = $this->actingAsApi($admin)
             ->patchJson("/api/admin/users/{$targetUser->id}/block", [
                 'is_blocked' => false,
@@ -183,7 +183,7 @@ class UserManagementTest extends TestCase
         $user = User::factory()->student()->create(['is_blocked' => false]);
         $plainToken = $user->createToken();
 
-        // Manually mark user as blocked in database
+        // Вручную отмечаем пользователя как заблокированного в базе данных
         $user->update(['is_blocked' => true]);
 
         $response = $this->withHeader('Authorization', 'Bearer '.$plainToken)

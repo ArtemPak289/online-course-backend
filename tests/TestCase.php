@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     /**
-     * Set the currently authenticated API user for the request.
+     * Установить текущего аутентифицированного пользователя API для запроса.
      */
     protected function actingAsApi(User $user): self
     {
