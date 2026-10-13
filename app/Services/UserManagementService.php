@@ -15,10 +15,12 @@ class UserManagementService
      */
     public function getPaginatedUsers(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $query = User::query();
+        $query = User::with('roles');
 
         if (! empty($filters['role'])) {
-            $query->where('role', $filters['role']);
+            $query->whereHas('roles', function ($q) use ($filters) {
+                $q->where('name', $filters['role']);
+            });
         }
 
         if (isset($filters['is_blocked']) && $filters['is_blocked'] !== '') {
@@ -33,11 +35,9 @@ class UserManagementService
      */
     public function updateRole(User $user, UserRole|string $role): User
     {
-        $user->update([
-            'role' => $role,
-        ]);
+        $user->syncRoles([$role]);
 
-        return $user->fresh();
+        return $user->fresh(['roles']);
     }
 
     /**
@@ -54,6 +54,6 @@ class UserManagementService
             $user->tokens()->delete();
         }
 
-        return $user->fresh();
+        return $user->fresh(['roles']);
     }
 }

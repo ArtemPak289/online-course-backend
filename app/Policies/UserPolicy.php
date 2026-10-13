@@ -11,7 +11,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->hasPermission('users.view');
     }
 
     /**
@@ -19,7 +19,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->isAdmin() || $user->id === $model->id;
+        return $user->hasPermission('users.view') || $user->id === $model->id;
     }
 
     /**
@@ -27,7 +27,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return $user->isAdmin() || $user->id === $model->id;
+        return $user->hasPermission('users.manage') || $user->id === $model->id;
     }
 
     /**
@@ -35,7 +35,7 @@ class UserPolicy
      */
     public function updateRole(User $user, User $model): bool
     {
-        return $user->isAdmin();
+        return $user->hasPermission('users.manage');
     }
 
     /**
@@ -43,7 +43,7 @@ class UserPolicy
      */
     public function block(User $user, User $model): bool
     {
-        // Только администратор может блокировать пользователей, и администратор не может заблокировать сам себя
-        return $user->isAdmin() && $user->id !== $model->id;
+        // Только пользователь с правом управления пользователями может блокировать пользователей, но не самого себя
+        return $user->hasPermission('users.manage') && $user->id !== $model->id;
     }
 }

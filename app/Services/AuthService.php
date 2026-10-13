@@ -23,9 +23,10 @@ class AuthService
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
-            'role' => UserRole::Student,
             'is_blocked' => false,
         ]);
+
+        $user->assignRole(UserRole::Student);
 
         event(new UserRegistered($user));
 

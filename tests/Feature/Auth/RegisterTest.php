@@ -53,8 +53,11 @@ class RegisterTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'email' => 'alice@example.com',
-            'role' => UserRole::Student->value,
             'is_blocked' => false,
+        ]);
+
+        $this->assertDatabaseHas('role_user', [
+            'user_id' => $response->json('user.id'),
         ]);
 
         $this->assertNotEmpty($response->json('token'));
