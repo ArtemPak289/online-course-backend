@@ -13,11 +13,15 @@ class AuthenticateApiToken
     /**
      * Обработать входящий запрос.
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ?string $mode = null): Response
     {
         $plainToken = $request->bearerToken();
 
         if (! $plainToken) {
+            if ($mode === 'optional') {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Unauthenticated.',
             ], Response::HTTP_UNAUTHORIZED);
@@ -30,6 +34,10 @@ class AuthenticateApiToken
             ->first();
 
         if (! $apiToken || ! $apiToken->isValid()) {
+            if ($mode === 'optional') {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Unauthenticated.',
             ], Response::HTTP_UNAUTHORIZED);
@@ -38,6 +46,10 @@ class AuthenticateApiToken
         $user = $apiToken->user;
 
         if (! $user) {
+            if ($mode === 'optional') {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Unauthenticated.',
             ], Response::HTTP_UNAUTHORIZED);
