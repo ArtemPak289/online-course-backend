@@ -75,6 +75,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Получить курсы, созданные данным пользователем (преподавателем).
+     */
+    public function authoredCourses(): HasMany
+    {
+        return $this->hasMany(Course::class, 'author_id');
+    }
+
+    /**
      * Аксессор для получения основной роли пользователя (совместимость с кодом и тестами).
      */
     public function getRoleAttribute(): ?UserRole
