@@ -14,34 +14,36 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
+        $this->call(RbacSeeder::class);
+
+        $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Administrator',
                 'password' => Hash::make('password123'),
-                'role' => UserRole::Admin,
                 'is_blocked' => false,
             ]
         );
+        $admin->syncRoles([UserRole::Admin->value]);
 
-        User::firstOrCreate(
+        $teacher = User::firstOrCreate(
             ['email' => 'teacher@example.com'],
             [
                 'name' => 'John Teacher',
                 'password' => Hash::make('password123'),
-                'role' => UserRole::Teacher,
                 'is_blocked' => false,
             ]
         );
+        $teacher->syncRoles([UserRole::Teacher->value]);
 
-        User::firstOrCreate(
+        $student = User::firstOrCreate(
             ['email' => 'student@example.com'],
             [
                 'name' => 'Jane Student',
                 'password' => Hash::make('password123'),
-                'role' => UserRole::Student,
                 'is_blocked' => false,
             ]
         );
+        $student->syncRoles([UserRole::Student->value]);
     }
 }

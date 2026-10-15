@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -29,7 +30,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
         'is_blocked',
     ];
 
@@ -44,6 +44,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * Дополнительные атрибуты, добавляемые в сериализацию массива / JSON.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'role',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -53,9 +62,112 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => UserRole::class,
             'is_blocked' => 'boolean',
         ];
+    }
+
+    /**
+     * Получить роли, назначенные пользователю.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * Аксессор для получения основной роли пользователя (совместимость с кодом и тестами).
+     */
+    public function getRoleAttribute(): ?UserRole
+    {
+        $roleName = $this->roles->first()?->name;
+
+        return $roleName ? UserRole::tryFrom($roleName) : null;
+    }
+
+    /**
+     * Назначить роль пользователю.
+     */
+    public function assignRole(Role|UserRole|string $role): self
+    {
+        $roleName = $role instanceof UserRole ? $role->value : ($role instanceof Role ? $role->name : $role);
+        $roleModel = Role::firstOrCreate(['name' => $roleName]);
+
+        $this->roles()->syncWithoutDetaching([$roleModel->id]);
+        $this->unsetRelation('roles');
+
+        return $this;
+    }
+
+    /**
+     * Отозвать роль у пользователя.
+     */
+    public function removeRole(Role|UserRole|string $role): self
+    {
+        $roleName = $role instanceof UserRole ? $role->value : ($role instanceof Role ? $role->name : $role);
+        $roleModel = Role::where('name', $roleName)->first();
+
+        if ($roleModel) {
+            $this->roles()->detach($roleModel->id);
+            $this->unsetRelation('roles');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Синхронизировать роли пользователя.
+     *
+     * @param  array<Role|UserRole|string>  $roles
+     */
+    public function syncRoles(array $roles): self
+    {
+        $roleIds = [];
+        foreach ($roles as $role) {
+            $roleName = $role instanceof UserRole ? $role->value : ($role instanceof Role ? $role->name : $role);
+            $roleModel = Role::firstOrCreate(['name' => $roleName]);
+            $roleIds[] = $roleModel->id;
+        }
+
+        $this->roles()->sync($roleIds);
+        $this->unsetRelation('roles');
+
+        return $this;
+    }
+
+    /**
+     * Проверить, имеет ли пользователь указанную роль (или одну из указанных ролей).
+     *
+     * @param  Role|UserRole|string|array<Role|UserRole|string>  $role
+     */
+    public function hasRole(Role|UserRole|string|array $role): bool
+    {
+        $roleList = is_array($role) ? $role : [$role];
+        $expectedNames = array_map(function ($r) {
+            if ($r instanceof UserRole) {
+                return $r->value;
+            }
+            if ($r instanceof Role) {
+                return $r->name;
+            }
+
+            return (string) $r;
+        }, $roleList);
+
+        return $this->roles->contains(fn (Role $r) => in_array($r->name, $expectedNames, true));
+    }
+
+    /**
+     * Проверить, имеет ли пользователь указанное право доступа.
+     */
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        $this->loadMissing('roles.permissions');
+
+        return $this->roles->flatMap(fn (Role $r) => $r->permissions)->contains('name', $permission);
     }
 
     /**
@@ -105,7 +217,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->role === UserRole::Admin;
+        return $this->hasRole(UserRole::Admin);
     }
 
     /**
@@ -113,7 +225,7 @@ class User extends Authenticatable
      */
     public function isTeacher(): bool
     {
-        return $this->role === UserRole::Teacher;
+        return $this->hasRole(UserRole::Teacher);
     }
 
     /**
@@ -121,17 +233,7 @@ class User extends Authenticatable
      */
     public function isStudent(): bool
     {
-        return $this->role === UserRole::Student;
-    }
-
-    /**
-     * Проверить, имеет ли пользователь указанную роль.
-     */
-    public function hasRole(UserRole|string $role): bool
-    {
-        $roleValue = $role instanceof UserRole ? $role->value : $role;
-
-        return $this->role?->value === $roleValue;
+        return $this->hasRole(UserRole::Student);
     }
 
     /**
