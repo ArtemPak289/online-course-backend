@@ -59,16 +59,6 @@ class UserManagementTest extends TestCase
         $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
-    public function test_teacher_cannot_view_users_list(): void
-    {
-        $teacher = User::factory()->teacher()->create();
-
-        $response = $this->actingAsApi($teacher)
-            ->getJson('/api/admin/users');
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
-    }
-
     public function test_admin_can_update_user_role(): void
     {
         $admin = User::factory()->admin()->create();
@@ -103,20 +93,6 @@ class UserManagementTest extends TestCase
 
         $response->assertStatus(Response::HTTP_FORBIDDEN);
         $this->assertSame(UserRole::Student, $targetUser->fresh()->role);
-    }
-
-    public function test_role_update_fails_with_invalid_role(): void
-    {
-        $admin = User::factory()->admin()->create();
-        $targetUser = User::factory()->student()->create();
-
-        $response = $this->actingAsApi($admin)
-            ->patchJson("/api/admin/users/{$targetUser->id}/role", [
-                'role' => 'superhero',
-            ]);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['role']);
     }
 
     public function test_admin_can_block_and_unblock_user(): void

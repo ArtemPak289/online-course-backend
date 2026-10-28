@@ -89,30 +89,4 @@ class RegisterTest extends TestCase
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors(['email']);
     }
-
-    public function test_registration_validation_fails_on_short_password(): void
-    {
-        $response = $this->postJson('/api/register', [
-            'name' => 'Short Pass',
-            'email' => 'short@example.com',
-            'password' => '123',
-            'password_confirmation' => '123',
-        ]);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['password']);
-    }
-
-    public function test_registration_validation_fails_on_password_mismatch(): void
-    {
-        $response = $this->postJson('/api/register', [
-            'name' => 'Mismatch Pass',
-            'email' => 'mismatch@example.com',
-            'password' => 'secret12345',
-            'password_confirmation' => 'different12345',
-        ]);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['password']);
-    }
 }

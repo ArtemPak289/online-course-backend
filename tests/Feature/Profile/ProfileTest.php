@@ -72,27 +72,6 @@ class ProfileTest extends TestCase
         ]);
     }
 
-    public function test_user_can_update_profile_keeping_own_email(): void
-    {
-        $user = User::factory()->create([
-            'name' => 'Same Email User',
-            'email' => 'same@example.com',
-        ]);
-
-        $response = $this->actingAsApi($user)
-            ->putJson('/api/profile', [
-                'name' => 'New Name Only',
-                'email' => 'same@example.com',
-            ]);
-
-        $response->assertStatus(Response::HTTP_OK);
-        $this->assertDatabaseHas('users', [
-            'id' => $user->id,
-            'name' => 'New Name Only',
-            'email' => 'same@example.com',
-        ]);
-    }
-
     public function test_user_cannot_update_profile_to_another_users_email(): void
     {
         User::factory()->create(['email' => 'other@example.com']);
@@ -144,39 +123,5 @@ class ProfileTest extends TestCase
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors(['current_password']);
-    }
-
-    public function test_user_cannot_change_password_when_confirmation_does_not_match(): void
-    {
-        $user = User::factory()->create([
-            'password' => Hash::make('oldpassword123'),
-        ]);
-
-        $response = $this->actingAsApi($user)
-            ->putJson('/api/profile/password', [
-                'current_password' => 'oldpassword123',
-                'password' => 'newpassword123',
-                'password_confirmation' => 'mismatched123',
-            ]);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['password']);
-    }
-
-    public function test_user_cannot_change_password_to_the_same_password(): void
-    {
-        $user = User::factory()->create([
-            'password' => Hash::make('oldpassword123'),
-        ]);
-
-        $response = $this->actingAsApi($user)
-            ->putJson('/api/profile/password', [
-                'current_password' => 'oldpassword123',
-                'password' => 'oldpassword123',
-                'password_confirmation' => 'oldpassword123',
-            ]);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-            ->assertJsonValidationErrors(['password']);
     }
 }

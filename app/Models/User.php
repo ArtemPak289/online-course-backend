@@ -171,6 +171,43 @@ class User extends Authenticatable
     }
 
     /**
+     * Покупки курсов пользователем.
+     */
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * Курсы, автором которых является данный пользователь.
+     */
+    public function courses(): HasMany
+    {
+        return $this->hasMany(Course::class, 'author_id');
+    }
+
+    /**
+     * Сертификаты, полученные пользователем.
+     */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    /**
+     * Проверить, приобрёл ли пользователь указанный курс.
+     */
+    public function hasPurchasedCourse(Course|int $course): bool
+    {
+        $courseId = $course instanceof Course ? $course->id : $course;
+
+        return $this->purchases()
+            ->where('course_id', $courseId)
+            ->where('status', 'paid')
+            ->exists();
+    }
+
+    /**
      * Получить все API-токены пользователя.
      */
     public function tokens(): HasMany

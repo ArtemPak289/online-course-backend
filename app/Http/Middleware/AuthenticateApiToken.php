@@ -11,13 +11,19 @@ use Symfony\Component\HttpFoundation\Response;
 class AuthenticateApiToken
 {
     /**
-     * Обработать входящий запрос.
+     * Обработать входящий запрос с проверкой токена API.
+     * Поддерживает режим auth.api:optional для открытых маршрутов с персонализированным доступом.
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ?string $mode = null): Response
     {
+        $isOptional = $mode === 'optional';
         $plainToken = $request->bearerToken();
 
         if (! $plainToken) {
+            if ($isOptional) {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Unauthenticated.',
             ], Response::HTTP_UNAUTHORIZED);
@@ -30,6 +36,10 @@ class AuthenticateApiToken
             ->first();
 
         if (! $apiToken || ! $apiToken->isValid()) {
+            if ($isOptional) {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Unauthenticated.',
             ], Response::HTTP_UNAUTHORIZED);
@@ -38,6 +48,10 @@ class AuthenticateApiToken
         $user = $apiToken->user;
 
         if (! $user) {
+            if ($isOptional) {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Unauthenticated.',
             ], Response::HTTP_UNAUTHORIZED);

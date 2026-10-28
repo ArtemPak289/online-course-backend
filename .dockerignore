@@ -1,0 +1,10 @@
+.git
+.idea
+vendor
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*.log
+.env
+.phpunit.result.cache
+postman_collection.json

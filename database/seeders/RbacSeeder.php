@@ -43,6 +43,7 @@ class RbacSeeder extends Seeder
             'lessons.view' => 'Просмотр уроков',
             'lessons.complete' => 'Отметка урока завершенным',
             'certificates.view' => 'Просмотр и скачивание сертификатов',
+            'categories.manage' => 'Управление категориями',
         ];
 
         $permissionModels = [];

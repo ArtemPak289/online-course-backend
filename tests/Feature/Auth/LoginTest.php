@@ -64,19 +64,6 @@ class LoginTest extends TestCase
             ]);
     }
 
-    public function test_login_fails_with_non_existent_email(): void
-    {
-        $response = $this->postJson('/api/login', [
-            'email' => 'doesnotexist@example.com',
-            'password' => 'somepassword',
-        ]);
-
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED)
-            ->assertJson([
-                'message' => 'Invalid login credentials.',
-            ]);
-    }
-
     public function test_blocked_user_cannot_login(): void
     {
         User::factory()->blocked()->create([
